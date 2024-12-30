@@ -105,7 +105,7 @@ export interface Meeting {
   number?: number | null;
   title?: string | null;
   date?: string | null;
-  host?: (number | null) | User;
+  hosts?: (number | User)[] | null;
   attendees?: (number | User)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -213,7 +213,7 @@ export interface MeetingsSelect<T extends boolean = true> {
   number?: T;
   title?: T;
   date?: T;
-  host?: T;
+  hosts?: T;
   attendees?: T;
   updatedAt?: T;
   createdAt?: T;

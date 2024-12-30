@@ -30,9 +30,10 @@ export const Meetings: CollectionConfig = {
       localized: true,
     },
     {
-      name: 'host',
+      name: 'hosts',
       type: 'relationship',
       relationTo: 'users',
+      hasMany: true,
     },
     {
       name: 'attendees',

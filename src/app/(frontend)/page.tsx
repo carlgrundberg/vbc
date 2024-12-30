@@ -1,8 +1,7 @@
-import type { Metadata } from 'next/types'
-
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
+import { User } from '@/payload-types'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -14,42 +13,31 @@ export default async function Page() {
     collection: 'meetings',
     depth: 1,
     limit: 12,
-    overrideAccess: false,
-    select: {
-      title: true,
-      number: true,
-      date: true,
-      host: true,
-    },
+    sort: '-date',
   })
 
   return (
-    <div className="pt-24 pb-24">
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
-          <h1>Meetings</h1>
-        </div>
-      </div>
-
+    <>
       {meetings.docs.map((meeting) => {
         return (
           <div key={meeting.id} className="container mb-16">
             <div className="prose dark:prose-invert max-w-none">
-              <h2>
+              <h2 className="text-2xl">
                 #{meeting.number} {meeting.title}
               </h2>
               {meeting.date && <p>{new Date(meeting.date).toLocaleString()}</p>}
-              {meeting.host && typeof meeting.host === 'object' && <p>Host: {meeting.host.name}</p>}
+              {meeting.hosts != null && meeting.hosts.length > 0 && (
+                <p>
+                  Hosted by{' '}
+                  {(meeting.hosts as User[]).map((host) => (
+                    <span key={host.id}>{host.name}</span>
+                  ))}
+                </p>
+              )}
             </div>
           </div>
         )
       })}
-    </div>
+    </>
   )
-}
-
-export function generateMetadata(): Metadata {
-  return {
-    title: `VBC Meetings`,
-  }
 }
