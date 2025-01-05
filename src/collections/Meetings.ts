@@ -4,6 +4,7 @@ export const Meetings: CollectionConfig = {
   slug: 'meetings',
   admin: {
     useAsTitle: 'title',
+    pagination: {},
   },
   access: {
     read: () => true,
@@ -12,6 +13,11 @@ export const Meetings: CollectionConfig = {
     {
       name: 'number',
       type: 'number',
+      unique: true,
+      required: true,
+      admin: {
+        step: 1,
+      },
     },
     {
       name: 'title',
@@ -24,10 +30,11 @@ export const Meetings: CollectionConfig = {
         date: {
           pickerAppearance: 'dayAndTime',
           timeFormat: 'HH:mm',
-          displayFormat: 'MMMM d, yyyy HH:mm',
+          displayFormat: 'd MMMM, yyyy HH:mm',
         },
       },
       localized: true,
+      required: true,
     },
     {
       name: 'hosts',

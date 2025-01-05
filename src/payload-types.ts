@@ -102,9 +102,9 @@ export interface Media {
  */
 export interface Meeting {
   id: number;
-  number?: number | null;
+  number: number;
   title?: string | null;
-  date?: string | null;
+  date: string;
   hosts?: (number | User)[] | null;
   attendees?: (number | User)[] | null;
   updatedAt: string;
