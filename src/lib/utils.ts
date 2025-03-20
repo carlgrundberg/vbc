@@ -1,13 +1,14 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function formatDateTime(date: string) {
   return new Intl.DateTimeFormat('sv-SE', {
     dateStyle: 'full',
     timeStyle: 'short',
-  }).format(new Date(date))
+    timeZone: 'Europe/Stockholm',
+  }).format(new Date(date));
 }
