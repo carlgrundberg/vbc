@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload';
 
 export const Meetings: CollectionConfig = {
   slug: 'meetings',
@@ -48,5 +48,10 @@ export const Meetings: CollectionConfig = {
       relationTo: 'users',
       hasMany: true,
     },
+    {
+      name: 'coverPhoto',
+      type: 'upload',
+      relationTo: 'media',
+    },
   ],
-}
+};

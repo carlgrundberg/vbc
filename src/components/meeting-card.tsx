@@ -1,9 +1,28 @@
 import { formatDateTime } from '@/lib/utils';
-import { Meeting } from '@/payload-types';
+import { Meeting, Media } from '@/payload-types';
+import Image from 'next/image';
 
-const MeetingCard = ({ meeting }: { meeting: Meeting }) => {
+const MeetingCard = ({
+  meeting,
+}: {
+  meeting: Meeting & { coverPhoto?: number | Media | null };
+}) => {
+  const coverPhoto = typeof meeting.coverPhoto === 'object' ? meeting.coverPhoto : null;
+
   return (
     <div className="rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-900">
+      {coverPhoto?.url && (
+        <div className="w-full h-48 overflow-hidden">
+          <Image
+            src={coverPhoto.url}
+            alt={coverPhoto.alt || `Cover photo for meeting ${meeting.number}`}
+            width={1600}
+            height={400}
+            className="w-full h-full object-cover"
+            priority
+          />
+        </div>
+      )}
       <div className="p-4 flex items-center gap-4">
         <div className="p-2 text-center">
           <p className="text-4xl font-bold dark:text-white">#{meeting.number}</p>

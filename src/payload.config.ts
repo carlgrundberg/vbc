@@ -1,4 +1,5 @@
 // storage-adapter-import-placeholder
+import { s3Storage } from '@payloadcms/storage-s3';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
@@ -46,5 +47,22 @@ export default buildConfig({
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
+    s3Storage({
+      collections: {
+        media: {
+          prefix: 'media',
+        },
+      },
+      bucket: process.env.SUPABASE_S3_BUCKET || '',
+      config: {
+        forcePathStyle: true,
+        region: process.env.SUPABASE_S3_REGION || 'us-east-1',
+        endpoint: process.env.SUPABASE_S3_ENDPOINT || '',
+        credentials: {
+          accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.SUPABASE_S3_SECRET_ACCESS_KEY || '',
+        },
+      },
+    }),
   ],
 });
