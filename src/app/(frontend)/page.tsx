@@ -1,6 +1,6 @@
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
-import MeetingCard from '@/components/meeting-card';
+import MeetingsList from '@/components/meetings-list';
 import { User } from '@/payload-types';
 
 export const dynamic = 'force-static';
@@ -42,22 +42,10 @@ export default async function Page() {
   ].pop();
 
   return (
-    <div className="max-w-md mx-auto md:max-w-2xl flex flex-col gap-4">
-      <h2 className="text-2xl font-bold dark:text-white">Upcoming</h2>
-      {upcomingMeetings.docs.length === 0 ? (
-        <p className="text-gray-700 dark:text-gray-500">
-          No meeting planned, {nextHost} is next up!
-        </p>
-      ) : (
-        <p className="text-gray-700 dark:text-gray-500">Next up is {nextHost}!</p>
-      )}
-      {upcomingMeetings.docs.map((meeting) => (
-        <MeetingCard key={meeting.id} meeting={meeting} />
-      ))}
-      <h2 className="text-2xl font-bold dark:text-white">History</h2>
-      {previousMeetings.docs.map((meeting) => (
-        <MeetingCard key={meeting.id} meeting={meeting} />
-      ))}
-    </div>
+    <MeetingsList
+      upcoming={upcomingMeetings.docs}
+      previous={previousMeetings.docs}
+      nextHost={nextHost ?? undefined}
+    />
   );
 }

@@ -2,11 +2,11 @@ import { formatDateTime } from '@/lib/utils';
 import { Meeting, Media } from '@/payload-types';
 import Image from 'next/image';
 
-const MeetingCard = ({
+export default function MeetingCardExpanded({
   meeting,
 }: {
   meeting: Meeting & { coverPhoto?: number | Media | null };
-}) => {
+}) {
   const coverPhoto = typeof meeting.coverPhoto === 'object' ? meeting.coverPhoto : null;
 
   return (
@@ -45,6 +45,4 @@ const MeetingCard = ({
       </div>
     </div>
   );
-};
-
-export default MeetingCard;
+}
