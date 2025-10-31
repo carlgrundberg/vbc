@@ -53,5 +53,41 @@ export const Meetings: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
     },
+    {
+      name: 'flights',
+      type: 'array',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          admin: {
+            description: 'Optional name for this flight',
+          },
+        },
+        {
+          name: 'items',
+          type: 'array',
+          required: true,
+          admin: {
+            description: 'Ordered list of items (beers) in this flight',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'url',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Link to Untappd or other source',
+              },
+            },
+          ],
+        },
+      ],
+    },
   ],
 };

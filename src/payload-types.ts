@@ -172,6 +172,26 @@ export interface Meeting {
   hosts?: (number | User)[] | null;
   attendees?: (number | User)[] | null;
   coverPhoto?: (number | null) | Media;
+  flights?:
+    | {
+        /**
+         * Optional name for this flight
+         */
+        name?: string | null;
+        /**
+         * Ordered list of items (beers) in this flight
+         */
+        items: {
+          title: string;
+          /**
+           * Link to Untappd or other source
+           */
+          url: string;
+          id?: string | null;
+        }[];
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -289,6 +309,19 @@ export interface MeetingsSelect<T extends boolean = true> {
   hosts?: T;
   attendees?: T;
   coverPhoto?: T;
+  flights?:
+    | T
+    | {
+        name?: T;
+        items?:
+          | T
+          | {
+              title?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
