@@ -182,11 +182,22 @@ export interface Meeting {
          * Ordered list of items (beers) in this flight
          */
         items: {
-          title: string;
           /**
            * Link to Untappd or other source
            */
           url: string;
+          /**
+           * Beer title (auto-filled from URL)
+           */
+          title?: string | null;
+          /**
+           * Brewery name (auto-filled from URL)
+           */
+          brewery?: string | null;
+          /**
+           * Beer style (auto-filled from URL)
+           */
+          style?: string | null;
           id?: string | null;
         }[];
         id?: string | null;
@@ -316,8 +327,10 @@ export interface MeetingsSelect<T extends boolean = true> {
         items?:
           | T
           | {
-              title?: T;
               url?: T;
+              title?: T;
+              brewery?: T;
+              style?: T;
               id?: T;
             };
         id?: T;

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { beforeChange } from './hooks/beforeChangeMeetings';
 
 export const Meetings: CollectionConfig = {
   slug: 'meetings',
@@ -8,6 +9,9 @@ export const Meetings: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    beforeChange: [beforeChange],
   },
   fields: [
     {
@@ -73,16 +77,32 @@ export const Meetings: CollectionConfig = {
           },
           fields: [
             {
-              name: 'title',
-              type: 'text',
-              required: true,
-            },
-            {
               name: 'url',
               type: 'text',
               required: true,
               admin: {
                 description: 'Link to Untappd or other source',
+              },
+            },
+            {
+              name: 'title',
+              type: 'text',
+              admin: {
+                description: 'Beer title (auto-filled from URL)',
+              },
+            },
+            {
+              name: 'brewery',
+              type: 'text',
+              admin: {
+                description: 'Brewery name (auto-filled from URL)',
+              },
+            },
+            {
+              name: 'style',
+              type: 'text',
+              admin: {
+                description: 'Beer style (auto-filled from URL)',
               },
             },
           ],
