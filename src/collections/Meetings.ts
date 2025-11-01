@@ -74,6 +74,9 @@ export const Meetings: CollectionConfig = {
           required: true,
           admin: {
             description: 'Ordered list of items (beers) in this flight',
+            components: {
+              RowLabel: '@/components/admin/FlightItemRowLabel',
+            },
           },
           fields: [
             {
