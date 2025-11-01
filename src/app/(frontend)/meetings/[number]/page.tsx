@@ -68,12 +68,10 @@ export default async function MeetingDetailsPage({
       )}
 
       <div className="flex items-start gap-4 mb-8">
-        <div className="aspect-square p-3 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center">
-          <p className="text-5xl font-bold dark:text-white">#{meeting.number}</p>
-        </div>
         <div className="flex flex-col gap-2 flex-1">
           <h1 className="text-2xl font-bold capitalize dark:text-white">
-            {meeting.title || `Meeting #${meeting.number}`}
+            Meeting #{meeting.number}
+            {meeting.title && ` - ${meeting.title}`}
           </h1>
           <p className="text-gray-700 dark:text-gray-400 text-lg">
             {typeof meeting.date === 'string' && formatDateTime(meeting.date)}
@@ -123,23 +121,21 @@ export default async function MeetingDetailsPage({
               {flight.items && flight.items.length > 0 && (
                 <div className="space-y-3">
                   {flight.items.map((item, itemIndex) => (
-                    <div
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       key={itemIndex}
-                      className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-850 transition-colors"
+                      className="block p-3 bg-gray-100 dark:bg-gray-900 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors"
                     >
                       <div className="flex items-start gap-3">
-                        <span className="text-gray-600 dark:text-gray-400 font-mono text-sm min-w-[2rem]">
+                        <span className="text-lg text-gray-900 dark:text-gray-100 font-mono min-w-[2rem] text-center self-stretch flex items-center justify-center">
                           {itemIndex + 1}.
                         </span>
                         <div className="flex-1 min-w-0">
-                          <a
-                            href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                          >
+                          <div className="font-medium text-gray-900 dark:text-gray-100">
                             {item.title}
-                          </a>
+                          </div>
                           {(item.brewery || item.style || item.abv != null || item.ibu != null) && (
                             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
                               {[
@@ -173,7 +169,7 @@ export default async function MeetingDetailsPage({
                           />
                         </svg>
                       </div>
-                    </div>
+                    </a>
                   ))}
                 </div>
               )}
