@@ -7,7 +7,7 @@ export default function FlightItemRowLabel() {
 
   return (
     <div className="text-lg font-semibold dark:text-white">
-      {rowNumber}: {data.title || 'Unknown'}
+      {(rowNumber || 0) + 1}: {data.title || 'Unknown'}
     </div>
   );
 }
