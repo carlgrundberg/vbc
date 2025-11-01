@@ -1,10 +1,12 @@
-import type { BeforeChangeHook } from 'payload';
 import * as cheerio from 'cheerio';
+import { CollectionBeforeChangeHook } from 'payload';
 
 interface ParsedBeerData {
   title?: string;
   brewery?: string;
   style?: string;
+  abv?: number;
+  ibu?: number;
 }
 
 async function fetchBeerDataFromURL(url: string): Promise<ParsedBeerData> {
@@ -25,70 +27,36 @@ async function fetchBeerDataFromURL(url: string): Promise<ParsedBeerData> {
     const $ = cheerio.load(html);
 
     // Try to extract OpenGraph metadata first (most reliable)
-    let beerName = $('meta[property="og:title"]').attr('content') || 
-                   $('meta[name="twitter:title"]').attr('content') || 
-                   $('title').text();
-
+    let beerName: string | undefined;
     let brewery: string | undefined;
     let style: string | undefined;
+    let abv: number | undefined;
+    let ibu: number | undefined;
 
     // For Untappd specifically, try to parse the page
     if (url.includes('untappd.com')) {
-      // Untappd typically has the beer name and brewery in the page
-      // Title usually follows pattern: "Beer Name | Brewery | Untappd"
-      const titleParts = beerName.split('|');
-      if (titleParts.length >= 2) {
-        beerName = titleParts[0]?.trim() || beerName;
-        brewery = titleParts[1]?.trim();
+      beerName = $('.basic .name h1').first().text() || undefined;
+      brewery = $('.basic .name .brewery').first().text() || undefined;
+      style = $('.basic .name .style').first().text() || undefined;
+
+      // Parse ABV and IBU
+      const abvText = $('.details .abv').first().text();
+      if (abvText) {
+        abv = parseFloat(abvText);
       }
 
-      // Try to find brewery from common selectors
-      if (!brewery) {
-        brewery = 
-          $('.beer-name a').first().text() ||
-          $('.brewery-name a').text() ||
-          $('a[href*="/brewery/"]').first().text() ||
-          undefined;
+      const ibuText = $('.details .ibu').first().text();
+      if (ibuText) {
+        ibu = parseFloat(ibuText);
       }
-
-      // Try to find style from common selectors
-      style =
-        $('.beer-style').first().text().trim() ||
-        $('[data-beer-style]').attr('data-beer-style') ||
-        $('meta[property="beer:style"]').attr('content') ||
-        undefined;
     }
-
-    // Try to extract from JSON-LD structured data
-    const jsonLdScripts = $('script[type="application/ld+json"]');
-    jsonLdScripts.each((_, el) => {
-      try {
-        const data = JSON.parse($(el).html() || '{}');
-        if (data['@type'] === 'Product' || data['@type'] === 'FoodProduct') {
-          if (data.name && !beerName) {
-            beerName = data.name;
-          }
-          if (data.brand && data.brand.name && !brewery) {
-            brewery = data.brand.name;
-          }
-          if (data.additionalProperty) {
-            const styleProp = data.additionalProperty.find(
-              (prop: any) => prop.name === 'Style' || prop.name === 'style'
-            );
-            if (styleProp && !style) {
-              style = styleProp.value;
-            }
-          }
-        }
-      } catch (e) {
-        // Ignore JSON parse errors
-      }
-    });
 
     return {
       title: beerName?.trim(),
       brewery: brewery?.trim(),
       style: style?.trim(),
+      abv,
+      ibu,
     };
   } catch (error) {
     console.error(`Error fetching beer data from ${url}:`, error);
@@ -96,7 +64,12 @@ async function fetchBeerDataFromURL(url: string): Promise<ParsedBeerData> {
   }
 }
 
-export const beforeChange: BeforeChangeHook = async ({ data, req, operation, originalDoc }) => {
+export const beforeChangeMeetings: CollectionBeforeChangeHook = async ({
+  data,
+  req,
+  operation,
+  originalDoc,
+}) => {
   // Only run for create or update operations
   if (operation !== 'create' && operation !== 'update') {
     return data;
@@ -121,20 +94,15 @@ export const beforeChange: BeforeChangeHook = async ({ data, req, operation, ori
             return item;
           }
 
-          // Skip fetching if we already have brewery or style data (to avoid re-fetching unnecessarily)
-          const needsFetch = !item.brewery && !item.style;
+          // Skip fetching if we already have the basic data (to avoid re-fetching unnecessarily)
+          // Only fetch if missing title, brewery, or style (abv/ibu are optional)
+          const needsFetch =
+            !item.title || !item.brewery || !item.style || item.abv == null || item.ibu == null;
+          const urlChanged =
+            originalDoc && originalDoc.flights?.[flightIndex]?.items?.[itemIndex]?.url !== item.url;
 
-          if (!needsFetch && operation === 'update' && originalDoc) {
-            // Double-check if this is actually a new item or URL changed
-            const originalFlight = originalDoc.flights?.[flightIndex];
-            const originalItem = originalFlight?.items?.[itemIndex];
-            const isNewItem = !originalItem;
-            const urlChanged = originalItem && originalItem.url !== item.url;
-            
-            if (!isNewItem && !urlChanged) {
-              // Item exists, URL hasn't changed, and we have data - skip fetch
-              return item;
-            }
+          if (!needsFetch && !urlChanged) {
+            return item;
           }
 
           // Fetch data from URL
@@ -143,18 +111,16 @@ export const beforeChange: BeforeChangeHook = async ({ data, req, operation, ori
           // Update item with parsed data, preferring existing values
           return {
             ...item,
-            title: item.title || parsedData.title || '',
-            brewery: item.brewery || parsedData.brewery || undefined,
-            style: item.style || parsedData.style || undefined,
+            ...parsedData,
           };
-        })
+        }),
       );
 
       return {
         ...flight,
         items: updatedItems,
       };
-    })
+    }),
   );
 
   return {
@@ -162,4 +128,3 @@ export const beforeChange: BeforeChangeHook = async ({ data, req, operation, ori
     flights: updatedFlights,
   };
 };
-

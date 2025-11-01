@@ -5,6 +5,7 @@ import { Meeting, Media } from '@/payload-types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Fragment } from 'react/jsx-runtime';
 
 export const dynamic = 'force-static';
 export const revalidate = 600;
@@ -139,11 +140,21 @@ export default async function MeetingDetailsPage({
                           >
                             {item.title}
                           </a>
-                          {(item.brewery || item.style) && (
-                            <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                              {item.brewery && <span>{item.brewery}</span>}
-                              {item.brewery && item.style && <span className="mx-2">•</span>}
-                              {item.style && <span>{item.style}</span>}
+                          {(item.brewery || item.style || item.abv != null || item.ibu != null) && (
+                            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
+                              {[
+                                item.brewery,
+                                item.style,
+                                item.abv ? `${item.abv}% ABV` : null,
+                                item.ibu ? `${item.ibu} IBU` : null,
+                              ]
+                                .filter(Boolean)
+                                .map((value, index) => (
+                                  <Fragment key={index}>
+                                    {index > 0 && <span>•</span>}
+                                    <span>{value}</span>
+                                  </Fragment>
+                                ))}
                             </div>
                           )}
                         </div>

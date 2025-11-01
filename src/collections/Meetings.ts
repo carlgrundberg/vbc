@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { beforeChange } from './hooks/beforeChangeMeetings';
+import { beforeChangeMeetings } from './hooks/beforeChangeMeetings';
 
 export const Meetings: CollectionConfig = {
   slug: 'meetings',
@@ -11,7 +11,7 @@ export const Meetings: CollectionConfig = {
     read: () => true,
   },
   hooks: {
-    beforeChange: [beforeChange],
+    beforeChange: [beforeChangeMeetings],
   },
   fields: [
     {
@@ -103,6 +103,22 @@ export const Meetings: CollectionConfig = {
               type: 'text',
               admin: {
                 description: 'Beer style (auto-filled from URL)',
+              },
+            },
+            {
+              name: 'abv',
+              type: 'number',
+              admin: {
+                description: 'Alcohol by volume (auto-filled from URL)',
+                step: 0.1,
+              },
+            },
+            {
+              name: 'ibu',
+              type: 'number',
+              admin: {
+                description: 'International Bitterness Units (auto-filled from URL)',
+                step: 1,
               },
             },
           ],

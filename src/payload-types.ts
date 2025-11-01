@@ -198,6 +198,14 @@ export interface Meeting {
            * Beer style (auto-filled from URL)
            */
           style?: string | null;
+          /**
+           * Alcohol by volume (auto-filled from URL)
+           */
+          abv?: number | null;
+          /**
+           * International Bitterness Units (auto-filled from URL)
+           */
+          ibu?: number | null;
           id?: string | null;
         }[];
         id?: string | null;
@@ -331,6 +339,8 @@ export interface MeetingsSelect<T extends boolean = true> {
               title?: T;
               brewery?: T;
               style?: T;
+              abv?: T;
+              ibu?: T;
               id?: T;
             };
         id?: T;
