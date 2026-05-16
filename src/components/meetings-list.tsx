@@ -8,6 +8,7 @@ import { Meeting } from '@/payload-types';
 type MeetingsListProps = {
   upcoming: Meeting[];
   previous: Meeting[];
+  /** Who hosting rotation says should run the next meeting not yet entered in CMS. */
   nextHost?: string;
 };
 
@@ -32,8 +33,14 @@ export default function MeetingsList({ upcoming, previous, nextHost }: MeetingsL
         <p className="text-gray-700 dark:text-gray-500">
           No meeting planned, {nextHost} is next up!
         </p>
+      ) : nextHost ? (
+        <p className="text-gray-700 dark:text-gray-500">
+          Next meeting to arrange: {nextHost}.
+        </p>
       ) : (
-        <p className="text-gray-700 dark:text-gray-500">Next up is {nextHost}!</p>
+        <p className="text-gray-700 dark:text-gray-500">
+          Next gathering after those above is still to assign.
+        </p>
       )}
       {upcoming.map((meeting) =>
         compact ? (

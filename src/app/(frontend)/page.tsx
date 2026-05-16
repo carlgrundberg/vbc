@@ -1,10 +1,9 @@
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import MeetingsList from '@/components/meetings-list';
-import { User } from '@/payload-types';
+import { nextOpenHostingTurn } from '@/lib/host-rotation';
 
-export const dynamic = 'force-static';
-export const revalidate = 600;
+export const dynamic = 'force-dynamic';
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise });
@@ -32,14 +31,7 @@ export default async function Page() {
     },
   });
 
-  const nextHost = [
-    ...new Set(
-      previousMeetings.docs
-        .map((meeting) => meeting.hosts as User[])
-        .flat()
-        .map((host) => host.name),
-    ),
-  ].pop();
+  const nextHost = nextOpenHostingTurn(previousMeetings.docs, upcomingMeetings.docs);
 
   return (
     <MeetingsList
